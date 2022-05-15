@@ -35,7 +35,10 @@ New-Module -name PwshLib -scriptblock {
       }
       
       $base64AuthInfo = [Convert]::ToBase64String([Text.Encoding]::ASCII.GetBytes(("{0}:{1}" -f $User, $Token)))
-      $header = @{Authorization = ("Basic {0}" -f $base64AuthInfo) }
+      $headers = @{
+        'Authorization' = ("Basic {0}" -f $base64AuthInfo)
+        'Content-Type'  = 'application/json'
+      }
     }
     
      process {
@@ -46,7 +49,7 @@ New-Module -name PwshLib -scriptblock {
         $identifier = "versionDescriptor.version=$Identifier"
         $api = "api-version=$ApiVersion"
         $uriGetFile = $items + "?" + $path + "&" + $dwl + "&" + $identifier + "&" + $api
-        $filecontent = Invoke-RestMethod -ContentType "application/json" -UseBasicParsing -Headers $header -Uri $uriGetFile
+        $filecontent = Invoke-RestMethod -UseBasicParsing -Headers $headers -Uri $uriGetFile
 
         if ([String]::IsNullOrEmpty($OutFilePath)) {
           Write-Output $filecontent
