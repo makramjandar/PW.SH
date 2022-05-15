@@ -39,14 +39,15 @@ New-Module -name PwshLib -scriptblock {
       $uriGetFile = $items + "?" + $path + "&" + $dwl + "&" + $identifier + "&" + $api
       
       if ([string]::IsNullOrEmpty($User)) {
-        $b64Pat = [Convert]::ToBase64String([Text.Encoding]::ASCII.GetBytes(("{0}:{1}" -f $User, $Token)))
+        $b64Pat = [System.Convert]::ToBase64String([Text.Encoding]::ASCII.GetBytes(("{0}:{1}" -f $User, $Token)))
+        $header = @{Authorization=("Basic {0}" -f $b64Pat)}
       } else {
-        $b64Pat = [Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes("${User}:${Token}"))
+        $b64Pat = [System.Convert]::ToBase64String([System.Text.Encoding]::ASCII.GetBytes(":$($Token)"))
+        $header = @{authorization = "Basic $b64Pat"}
       }
     }
 
    process {
-      $header = @{Authorization=("Basic {0}" -f $b64Pat)}
       $filecontent = Invoke-RestMethod -ContentType "application/json" -UseBasicParsing -Headers $header -Uri $uriGetFile
       try {
         if ([String]::IsNullOrEmpty($OutFilePath)) {
