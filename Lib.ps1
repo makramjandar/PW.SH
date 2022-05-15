@@ -1,55 +1,50 @@
-new-module -name PWSHLib -scriptblock {
+New-Module -name PwshLib -scriptblock {
   Function Get-AzureRepoContent {
     param( 
       [Parameter(Mandatory = $true)] [string] $GitFilePath,
       [Parameter(Mandatory = $true)] [string] $RepoName,
       [Parameter(Mandatory = $false)] [string] $OutFilePath,
-      [Parameter(Mandatory = $false)] [string] $token,
-      [Parameter(Mandatory = $false)] [string] $orgUrl,
-      [Parameter(Mandatory = $false)] [string] $teamProject,
-      [Parameter(Mandatory = $false)] [string] $apiVersion = '6.1-preview.1',
+      [Parameter(Mandatory = $false)] [string] $Token = $(System.AccessToken),
+      [Parameter(Mandatory = $false)] [string] $OrgUrl = $(System.CollectionUri),
+      [Parameter(Mandatory = $false)] [string] $TeamProject = $(System.TeamProject),
+      [Parameter(Mandatory = $false)] [string] $Identifier = 'main',
+      [Parameter(Mandatory = $false)] [string] $ApiVersion = '6.1-preview.1',
       [Parameter(Mandatory = $false)] [string] $User = ''
     )
 
     begin {
-      if ([String]::IsNullOrEmpty($token)) {
-        if ($(System.AccessToken) -eq $null) {
-          Write-Error "you must either pass the -token parameter or use the BUILD_TOKEN environment variable"
-          exit 1;
-        }
-        else {
-          $token = $(System.AccessToken);
-        }
+
+      if ([String]::IsNullOrEmpty($Token)) {
+        Write-Error "you must either pass the -token parameter"
+        Write-Error "or use the BUILD_TOKEN environment variable"
+        exit 1
       }
-      if ([string]::IsNullOrEmpty($teamProject)) {
-        if ($(System.TeamProject) -eq $null) {
-          Write-Error "you must either pass the -teampProject parameter or use the SYSTEM_TEAMPROJECT environment variable"
-          exit 1;
-        }
-        else {
-          $teamProject = $(System.TeamProject)
-        }
+
+      if ([string]::IsNullOrEmpty($TeamProject)) {
+        Write-Error "you must either pass the -teampProject parameter"
+        Write-Error "or use the SYSTEM_TeamProject environment variable"
+        exit 1
       }
-      if ([string]::IsNullOrEmpty($orgUrl)) {
-        if ($(System.CollectionUri) -eq $null) {
-          Write-Error "you must either pass the -orgUrl parameter or use the SYSTEM_COLLECTIONURI environment variable"
-          exit 1
-        }
-        else {
-          $teamProject = $(System.CollectionUri)
-        }
+
+      if ([string]::IsNullOrEmpty($OrgUrl)) {
+        Write-Error "you must either pass the -OrgUrl parameter"
+        Write-Error "or use the SYSTEM_COLLECTIONURI environment variable"
+        exit 1
       }
-      $base64AuthInfo = [Convert]::ToBase64String([Text.Encoding]::ASCII.GetBytes(("{0}:{1}" -f $User, $token)))
+      
+      $base64AuthInfo = [Convert]::ToBase64String([Text.Encoding]::ASCII.GetBytes(("{0}:{1}" -f $User, $Token)))
       $header = @{Authorization = ("Basic {0}" -f $base64AuthInfo) }
     }
-
-    process {
+    
+     process {
       try {
-        
-        $uriGetFile = "$orgUrl/$teamProject/_apis/git/repositories/$repoName/items?scopePath=$GitFilePath&download=true&api-version=$apiVersion"
-        Write-Host "Url:" $uriGetFile
+        $items = "$OrgUrl/$TeamProject/_apis/git/repositories/$repoName/items"
+        $path = "scopePath=$GitFilePath"
+        $dwl = "download=true"
+        $identifier = "versionDescriptor.version=$Identifier"
+        $api = "api-version=$ApiVersion"
+        $uriGetFile = $items + '?' + $path + '&' + $dwl + '&' + $identifier + '&' + $api
         $filecontent = Invoke-RestMethod -ContentType "application/json" -UseBasicParsing -Headers $header -Uri $uriGetFile
-        
 
         if ([String]::IsNullOrEmpty($OutFilePath)) {
           Write-Output $filecontent
