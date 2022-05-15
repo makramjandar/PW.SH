@@ -30,24 +30,26 @@ New-Module -name PwshLib -scriptblock {
         Write-Error "or use the SYSTEM_COLLECTIONURI environment variable"
         exit 1
       }
+
+      $items = "$OrgUrl/$TeamProject/_apis/git/repositories/$repoName/items"
+      $path = "scopePath=$GitFilePath"
+      $dwl = "download=true"
+      $identifier = "versionDescriptor.version=$Identifier"
+      $api = "api-version=$ApiVersion"
+      $uriGetFile = $items + "?" + $path + "&" + $dwl + "&" + $identifier + "&" + $api
       
-      $base64AuthInfo = [Convert]::ToBase64String([Text.Encoding]::ASCII.GetBytes(("{0}:{1}" -f $User, $Token)))
-      $headers = @{
-        'Authorization' = ("Basic {0}" -f $base64AuthInfo)
-        'Content-Type'  = 'application/json'
+      if ([string]::IsNullOrEmpty($User)) {
+        $base64AuthInfo = [Convert]::ToBase64String([Text.Encoding]::ASCII.GetBytes(("{0}:{1}" -f $User, $Token)))
+        $header = @{Authorization=("Basic {0}" -f $base64AuthInfo)}
+      } else {
+        $base64AuthInfo = [System.Convert]::ToBase64String([System.Text.Encoding]::ASCII.GetBytes(":$($Token)"))
+        $header = @{"Authorization"="Basic $base64AuthInfo"}
+        $filecontent = Invoke-RestMethod -UseBasicParsing -ContentType "application/json" -Headers $header -Uri $uriGetFile
       }
     }
-    
-     process {
+   process {
+      $filecontent = Invoke-RestMethod -ContentType "application/json" -UseBasicParsing -Headers $header -Uri $uriGetFile
       try {
-        $items = "$OrgUrl/$TeamProject/_apis/git/repositories/$repoName/items"
-        $path = "scopePath=$GitFilePath"
-        $dwl = "download=true"
-        $identifier = "versionDescriptor.version=$Identifier"
-        $api = "api-version=$ApiVersion"
-        $uriGetFile = $items + "?" + $path + "&" + $dwl + "&" + $identifier + "&" + $api
-        $filecontent = Invoke-RestMethod -UseBasicParsing -Headers $headers -Uri $uriGetFile
-
         if ([String]::IsNullOrEmpty($OutFilePath)) {
           Write-Output $filecontent
           exit 0 
