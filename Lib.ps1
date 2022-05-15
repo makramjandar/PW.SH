@@ -13,9 +13,6 @@ New-Module -name PwshLib -scriptblock {
     )
 
     begin {
-      Write-Output "$env:SYSTEM_ACCESSTOKEN"
-      Write-Output "$env:system_accesstoken"
-      Write-Output "---------------------------------------------------"
       if ([String]::IsNullOrEmpty($Token)) {
         Write-Error "you must either pass the -token parameter"
         Write-Error "or use the BUILD_TOKEN environment variable"
