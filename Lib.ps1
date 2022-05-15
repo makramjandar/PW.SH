@@ -44,7 +44,6 @@ New-Module -name PwshLib -scriptblock {
       } else {
         $b64Pat = [Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes("${User}:${Token}"))
         $header = @{"Authorization"="Basic $b64Pat"}
-        $filecontent = Invoke-RestMethod -UseBasicParsing -ContentType "application/json" -Headers $header -Uri $uriGetFile
       }
     }
     
