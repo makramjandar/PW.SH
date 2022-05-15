@@ -38,9 +38,9 @@ New-Module -name PwshLib -scriptblock {
       $api = "api-version=$ApiVersion"
       $uriGetFile = $items + "?" + $path + "&" + $dwl + "&" + $identifier + "&" + $api
       
-      User = "$(whoami)"
+      $User = "$(whoami)"
       if ([string]::IsNullOrEmpty($User)) {
-        User = "$([System.Environment]::UserName)"
+        $User = "$([System.Environment]::UserName)"
         $b64Token = [System.Convert]::ToBase64String([Text.Encoding]::ASCII.GetBytes(("{0}:{1}" -f $User, $Token)))
         $header = @{Authorization=("Basic {0}" -f $b64Token)}
       } else {
