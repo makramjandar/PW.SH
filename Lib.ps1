@@ -39,10 +39,10 @@ New-Module -name PwshLib -scriptblock {
       $uriGetFile = $items + "?" + $path + "&" + $dwl + "&" + $identifier + "&" + $api
       
       if ([string]::IsNullOrEmpty($User)) {
-        $b64Pat = [System.Convert]::ToBase64String([Text.Encoding]::ASCII.GetBytes(("{0}:{1}" -f $User, $Token)))
-        $header = @{Authorization=("Basic {0}" -f $b64Pat)}
+        $b64Token = [System.Convert]::ToBase64String([Text.Encoding]::ASCII.GetBytes(("{0}:{1}" -f $User, $Token)))
+        $header = @{Authorization=("Basic {0}" -f $b64Token)}
       } else {
-        $b64Pat = [System.Convert]::ToBase64String([System.Text.Encoding]::ASCII.GetBytes(":$($Token)"))
+        $b64Pat = [System.Convert]::ToBase64String([System.Text.Encoding]::ASCII.GetBytes("$($User):$($Token)"))
         $header = @{authorization = "Basic $b64Pat"}
       }
     }
