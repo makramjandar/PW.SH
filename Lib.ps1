@@ -43,7 +43,7 @@ New-Module -name PwshLib -scriptblock {
         $dwl = "download=true"
         $identifier = "versionDescriptor.version=$Identifier"
         $api = "api-version=$ApiVersion"
-        $uriGetFile = $items + '?' + $path + '&' + $dwl + '&' + $identifier + '&' + $api
+        $uriGetFile = $items + "?" + $path + "&" + $dwl + "&" + $identifier + "&" + $api
         $filecontent = Invoke-RestMethod -ContentType "application/json" -UseBasicParsing -Headers $header -Uri $uriGetFile
 
         if ([String]::IsNullOrEmpty($OutFilePath)) {
