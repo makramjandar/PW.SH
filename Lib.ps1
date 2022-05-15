@@ -4,9 +4,9 @@ New-Module -name PwshLib -scriptblock {
       [Parameter(Mandatory = $true)] [string] $GitFilePath,
       [Parameter(Mandatory = $true)] [string] $RepoName,
       [Parameter(Mandatory = $false)] [string] $OutFilePath,
-      [Parameter(Mandatory = $false)] [string] $Token = $(System.AccessToken),
-      [Parameter(Mandatory = $false)] [string] $OrgUrl = $(System.CollectionUri),
-      [Parameter(Mandatory = $false)] [string] $TeamProject = $(System.TeamProject),
+      [Parameter(Mandatory = $false)] [string] $Token = $env:SYSTEM_ACCESSTOKEN,
+      [Parameter(Mandatory = $false)] [string] $OrgUrl = $env:SYSTEM_COLLECTIONURI,
+      [Parameter(Mandatory = $false)] [string] $TeamProject = $env:SYSTEM_TEAMPROJECT,
       [Parameter(Mandatory = $false)] [string] $Identifier = 'main',
       [Parameter(Mandatory = $false)] [string] $ApiVersion = '6.1-preview.1',
       [Parameter(Mandatory = $false)] [string] $User = ''
