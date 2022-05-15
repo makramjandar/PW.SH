@@ -4,9 +4,9 @@ New-Module -name PwshLib -scriptblock {
       [Parameter(Mandatory = $true)] [string] $GitFilePath,
       [Parameter(Mandatory = $true)] [string] $RepoName,
       [Parameter(Mandatory = $false)] [string] $OutFilePath,
-      [Parameter(Mandatory = $false)] [string] $Token = "$env:SYSTEM_ACCESSTOKEN",
-      [Parameter(Mandatory = $false)] [string] $OrgUrl = "$env:SYSTEM_COLLECTIONURI",
-      [Parameter(Mandatory = $false)] [string] $TeamProject = "$env:SYSTEM_TEAMPROJECT",
+      [Parameter(Mandatory = $false)] [string] $Token = "$env:TOKEN_OR_PAT",
+      [Parameter(Mandatory = $false)] [string] $OrgUrl = "$env:ORG_URL",
+      [Parameter(Mandatory = $false)] [string] $TeamProject = "$env:PROJECT_NAME",
       [Parameter(Mandatory = $false)] [string] $Identifier = 'main',
       [Parameter(Mandatory = $false)] [string] $ApiVersion = '6.1-preview.1',
       [Parameter(Mandatory = $false)] [string] $User = ''
@@ -15,19 +15,19 @@ New-Module -name PwshLib -scriptblock {
     begin {
       if ([String]::IsNullOrEmpty($Token)) {
         Write-Error "you must either pass the -token parameter"
-        Write-Error "or use the BUILD_TOKEN environment variable"
+        Write-Error "or use the System.AccessToken env variable"
         exit 1
       }
 
       if ([string]::IsNullOrEmpty($TeamProject)) {
         Write-Error "you must either pass the -teampProject parameter"
-        Write-Error "or use the SYSTEM_TeamProject environment variable"
+        Write-Error "or use the System.TeamProject env variable"
         exit 1
       }
 
       if ([string]::IsNullOrEmpty($OrgUrl)) {
         Write-Error "you must either pass the -OrgUrl parameter"
-        Write-Error "or use the SYSTEM_COLLECTIONURI environment variable"
+        Write-Error "or use the System.CollectionUri env variable"
         exit 1
       }
 
